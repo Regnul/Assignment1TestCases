@@ -1,0 +1,60 @@
+
+Project Selection/Why - I am selecting a web based application that serves the user a basic video game experience as an RPG. At the moment the basic vision 
+is to establish that this website takes a login, creates a user profile for use as a game file, and launches a 2D environment where the avatar navigates in three dimensions. 
+The intent of limiting the scope explicitely here is to allow the test cases I come up with below to be meaningful for these needs. Additional scope will be added. 
+
+As time goes on I will expand what is supposed to be done in this game environment. For now I'm limiting the implementation until I discuss how to proceed as a full project with the professor.
+
+AI Generated Test Cases - I explicitely asked that it focus on login for a user, profiles to tie to a game file as a 1 to many match for multiple game sessions/states, and a basic game experience focused on movement.
+
+Test Case ID	      Feature	Scenario	                              Expected Result
+AUTH-01	Login	      User enters valid credentials.	                JWT or Session cookie issued; redirect to Profile.
+AUTH-02	Login	      User enters non-existent email/wrong password.	Error message "Invalid credentials"; no access.
+PROF-01	Profile	    Authenticated user updates their display name.	Database updates; new name shows on UI.
+PROF-02	Security	  Unauthenticated user tries to access /gameURL.	Redirected to Login page.
+
+Test Case ID	      Feature	Scenario	                              Expected Result
+MOVE-01       	    X-Y Navigation	                                User inputs directional keys (WASD/Arrows).	Avatar $(x, y)$ coordinates update; sprite renders at new position.
+MOVE-02	            Z-Axis (Depth)	                                User triggers jump or "depth" shift (e.g., Spacebar).	$z$ coordinate increments; visual scaling or shadow offset applied to represent height.
+MOVE-03	            Boundary Check	                                Avatar reaches the defined $(x, y)$ map limits.	Coordinate "clamping" prevents avatar from moving off-screen or into out-of-bounds memory.
+MOVE-04	            Velocity/Inertia	                              User releases movement key.	Avatar decelerates to $0$ velocity; coordinates stop updating.
+MOVE-05	            Z-Axis Interaction	                            Avatar $z$ coordinate is $> 0$ (in air).	Gravity function applies downward force until $z = 0$(ground level).
+
+-- At this point I described to the AI how I intended to have a one to many relationship between a user account and the profiles created afterwards to allow the game to be played. 
+-- This led to a focu on save state and persistence. It naturally filled out the rest of the concerns related to profile creation and making a consistent experience
+ 
+Test Case ID	      Feature	Scenario	                              Expected Result
+SAVE-01	            Profile Creation	                              User creates a 2nd profile (e.g., "Warrior_Slot").	New entry in database linked to UserID; default $(x, y, z)$coordinates set to $(0,0,0)$.
+SAVE-02	            State Retrieval	                                User selects "Profile B" from the dashboard.	Game launches with coordinates and stats specific to "Profile B" only.
+SAVE-03            	Mid-Game Save	                                  User triggers a "Save" action within the 3D space.	Current $(x, y, z)$ coordinates are pushed to the Mock API and updated in Docker persistence.
+SAVE-04	            Data Integrity	                                User deletes "Profile A".	Profile A is removed; "Profile B" remains intact and accessible.
+SAVE-05	            Conflict Check	                                User opens two tabs with different profiles.	Session remains stable; each game instance tracks its respective profile state without cross-contamination.
+
+
+Critiques of AI generated Test Cases -
+
+AUTH/PROF/SAVE - These test cases are reasonable approaches to browser behavior. A session stored in cookies, invalid credentials hadnled, a database reference, a redirect. This handles a flow and seems complete. What
+it lacks however is any complete understanding of what will do all of this. Is the website solely browser based? Does it function locally or is it hosted on a web server? This would require extensive additional work
+to flesh out what are honestly good test cases. I think these are all usable and some will generate additional sub cases to explore. None are overly specific at this point, which is good.
+
+I would add more regarding what is used for a user profile (email or other login integration) and how to handle security beyond just redirect to login. Such as what conditions cause this and what options are experienced.
+
+SAVE cases are a mix of how to manage a save, what it attaches to (a profile) and if this save action has edge cases such as if it is sudden or mid-game versus at a known point like file creation. 
+
+I would add situations related to abandoned play sessions (like auto save) or if these data integrity or conflict checks actually are describing a situation I want to encourage? Maybe only one active play session per user
+is going to be allowed. This would change a conflict test flow and needs to be worked more fully to redirect the AI using new constraints.
+
+
+MOVE - These are more interesting as the AI is trying to imagine more than I would expect to decide at this point. Yes we should check to see that a character can move, yes there would be velocity and boundary checks to 
+define the movement is appropriate and recoverable if unintended action occurs. It wants to literally jump ahead and imagine a Z access. This would expand velocity to a 3-D realistic setting involving "gravity" or other natural limitations.
+Overall this is a very complete approach from the AI and I believe this is because the topic is so clearly self-defined. Its been done before the same way and thats what AI is best used to generate quickly.
+
+It wants to define movement in all directions, how to check the speed, how to define boundaries and avoid game breaking area conflicts. Thats actually nearly all I would imagine to check on this topic! I would certainly remove nothing. 
+
+I would want to add object boundaries and static mesh situations as this is how movement will overlap with a real enviornment. The language used by the AI in the test outcomes indicates awareness of these topics.
+
+It did not describe anything related to object interactions so that is the next thing which should be handled. It would require defining what gameplay elements might appear so it will require more permanent decisions.
+
+I look forward to a meeting with you soon to ensure I am approaching this correctly. 
+
+
